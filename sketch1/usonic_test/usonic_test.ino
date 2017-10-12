@@ -19,6 +19,7 @@
 #define MAX_DIST    16 // cm
 
 bool wallFound = false;
+int d_left, d_right, d_front; // cm
 
 void setup() {
   
@@ -57,8 +58,7 @@ void straight(){
  *  Main Loop
  */
 void loop() {
-  
-  int d_left, d_right, d_front;
+
   //distance in cm, time out at 11600us or 2m maximum range
   d_left = usonic(11600, 2) / 58;
   d_right = usonic(11600, 4) / 58;
@@ -84,11 +84,6 @@ void loop() {
     }
     
   } else if (d_left < 200) {
-
-    //distance in cm, time out at 11600us or 2m maximum range
-    d_left = usonic(11600, 2) / 58;
-    d_right = usonic(11600, 4) / 58;
-    d_front = usonic(11600, 4) / 58;
     
     analogWrite(DRIVE_PIN, 5);
     if (d_left < MIN_DIST) {
