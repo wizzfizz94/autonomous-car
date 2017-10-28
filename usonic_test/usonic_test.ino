@@ -15,10 +15,10 @@
 #define TURN_PIN 9
 #define DRIVE_PIN 11
 
-#define MIN_DIST          15 // cm
-#define MAX_DIST          20 // cm
-#define MAX_RANGE         50 // cm
-#define FRONT_DIST        25 // cm
+#define MIN_DIST          50 // cm
+#define MAX_DIST          60 // cm
+#define MAX_RANGE         200 // cm
+#define FRONT_DIST        100 // cm
 #define LEFT_SIDE         1
 #define RIGHT_SIDE        2
 
@@ -59,12 +59,12 @@ void loop() {
   right_dist = usonic(timeout, TRIG_RIGHT) / 58;
   front_dist = usonic(timeout, TRIG_FRONT) / 58;
 
-  /*if (left_dist < MIN_DIST && right_dist < MIN_DIST && front_dist < FRONT_DIST) {
+  if (left_dist < MIN_DIST && right_dist < MIN_DIST && front_dist < FRONT_DIST) {
     Serial.print("All sensors blocked - shutting down!\n");
     straight();
     analogWrite(DRIVE_PIN, 0);
     exit(0);
-  }*/
+  }
 
   if (wall_side == -1) {
     if (front_dist > FRONT_DIST) {
@@ -83,9 +83,9 @@ void loop() {
     else                                                    { straight(); }
   }
   
-  sprintf(str, "wall_side = %s left = %d, right = %d, front = %d\n", wall_side == 9 ? "LEFT" : "RIGHT", left_dist, right_dist, front_dist);
+  sprintf(str, "wall_side = %s left = %d, right = %d, front = %d\n", wall_side == LEFT_SIDE ? "LEFT" : "RIGHT", left_dist, right_dist, front_dist);
   Serial.print(str);
-  delay(100);
+  delay(200);
 }
 
 /*
@@ -93,14 +93,17 @@ void loop() {
  */
 void turnRight(){
   servo.write(180);
+  Serial.print("Turning right!\n");
 }
 
 void turnLeft(){
   servo.write(0);
+  Serial.print("Turning left!\n");
 }
 
 void straight(){
   servo.write(90);
+  Serial.print("Driving straight!\n");
 }
 
 
