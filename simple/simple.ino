@@ -15,8 +15,8 @@
 #define TURN_PIN 9
 #define DRIVE_PIN 11
 
-#define DRIVE_SPEED 255
-#define SPRINT_TIME 350
+#define DRIVE_SPEED 230
+#define SPRINT_TIME 400
 
 #define STRAIGHT_DEG 95
 #define ANGLE_CHNG 20
@@ -24,8 +24,8 @@
 #define RIGHT_DEG (STRAIGHT_DEG - ANGLE_CHNG)
 
 #define MIN_DIST          30 // cm
-#define MAX_DIST          40 // cm
-#define MAX_RANGE         200 // cm
+#define MAX_DIST          35 // cm
+#define MAX_RANGE         60 // cm
 #define FRONT_DIST        100 // cm
 #define LEFT_SIDE         1
 #define RIGHT_SIDE        2
@@ -36,7 +36,7 @@ int timeout = 11600; // microseconds -> equivalent to 4m
 Servo servo;
 
 void setup() {
-//  Serial.begin(9600);/
+  Serial.begin(9600);
 
   servo.attach(TURN_PIN);
   pinMode(DRIVE_PIN, OUTPUT);
@@ -44,61 +44,21 @@ void setup() {
   usonicsetup();
   delay(200);  // for sensors to settle
 
-  // Determine the wall to follow
-  left_dist = usonic(timeout, TRIG_LEFT) / 58;
-  right_dist = usonic(timeout, TRIG_RIGHT) / 58;
-  front_dist = usonic(timeout, TRIG_FRONT) / 58;
-
-  if (left_dist < MAX_RANGE || right_dist < MAX_RANGE) {
-    if (left_dist < right_dist) {
-      wall_side = LEFT_SIDE;
-    } else {
-      wall_side = RIGHT_SIDE;
-    }
-  } else {
-    wall_side = -1;
-  }
+  analogWrite(DRIVE_PIN, DRIVE_SPEED);
   
 }
 
 void loop() {
   left_dist = usonic(timeout, TRIG_LEFT) / 58;
-  right_dist = usonic(timeout, TRIG_RIGHT) / 58;
   front_dist = usonic(timeout, TRIG_FRONT) / 58;
 
-//  if (left_dist < MIN_DIST && right_dist < MIN_DIST && front_dist < FRONT_DIST) {
-//    stop();
-//    Serial.print("All /sensors blocked shutting down!\n");
-//    delay(200);
-//    exit(0);
-//  }
+  if (left_dist < MIN_DIST || front_dist < MAX_RANGE) turnRight();
+  else if (left_dist > MAX_DIST)                      turnLeft();
+  else                                                straight();
 
-  if (wall_side == -1) {
-    if (front_dist > FRONT_DIST) {
-      straight();
-    } else {
-      turnLeft();
-      wall_side = RIGHT_SIDE;
-    }
-  } else if (wall_side == LEFT_SIDE) {
-    if (left_dist < MIN_DIST )          turnRight();
-    else if (left_dist > MAX_DIST)      turnLeft();
-    else                                straight();
-  } else if (wall_side == RIGHT_SIDE) {
-    if (right_dist < MIN_DIST )         turnLeft();
-    else if (right_dist > MAX_DIST)     turnRight();
-    else                                straight();
-  }
-
-  //drive sprint
-  digitalWrite(DRIVE_PIN, HIGH);
-  delay(SPRINT_TIME);
-  digitalWrite(DRIVE_PIN, LOW);
-  delay(SPRINT_TIME);
-  
-//  sprintf(str, "/wall_side = %s left = %d, right = %d, front = %d\n", wall_side == LEFT_SIDE ? "LEFT" : "RIGHT", left_dist, right_dist, front_dist);
-//  delay(200);/
-//  Serial.print(str);/
+  sprintf(str, "left = %d, front = %d\n", left_dist, front_dist);
+  Serial.print(str);
+  delay(200);
 }
 
 /*
@@ -106,17 +66,17 @@ void loop() {
  */
 void turnRight(){
   servo.write(RIGHT_DEG);
-//  Serial.print("Turning right!\n");/
+  Serial.print("Turning right!\n");
 }
 
 void turnLeft(){
   servo.write(LEFT_DEG);
-//  Serial.print("Turning left!\n");/
+  Serial.print("Turning left!\n");
 }
 
 void straight(){
   servo.write(STRAIGHT_DEG);
-//  Serial.print("Driving straight!\n");/
+  Serial.print("Driving straight!\n");
 }
 
 void stop(){
