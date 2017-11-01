@@ -66,12 +66,12 @@ void loop() {
   right_dist = usonic(timeout, TRIG_RIGHT) / 58;
   front_dist = usonic(timeout, TRIG_FRONT) / 58;
 
-//  if (left_dist < MIN_DIST && right_dist < MIN_DIST && front_dist < FRONT_DIST) {
-//    stop();
-//    Serial.print("All /sensors blocked shutting down!\n");
-//    delay(200);
-//    exit(0);
-//  }
+  if (left_dist < MIN_DIST && right_dist < MIN_DIST && front_dist < FRONT_DIST) {
+    stop();
+    Serial.print("All /sensors blocked shutting down!\n");
+    delay(200);
+    exit(0);
+  }
 
   if (wall_side == -1) {
     if (front_dist > FRONT_DIST) {

@@ -25,7 +25,7 @@
 
 #define MIN_DIST          30 // cm
 #define MAX_DIST          35 // cm
-#define MAX_RANGE         60 // cm
+#define MIN_DIST_F         60 // cm
 #define FRONT_DIST        100 // cm
 #define LEFT_SIDE         1
 #define RIGHT_SIDE        2
@@ -52,7 +52,7 @@ void loop() {
   left_dist = usonic(timeout, TRIG_LEFT) / 58;
   front_dist = usonic(timeout, TRIG_FRONT) / 58;
 
-  if (left_dist < MIN_DIST || front_dist < MAX_RANGE) turnRight();
+  if (left_dist < MIN_DIST || front_dist < MIN_DIST_F) turnRight();
   else if (left_dist > MAX_DIST)                      turnLeft();
   else                                                straight();
 
